@@ -2,14 +2,12 @@ clear;
 close all;
 clc;
 
-addpath('./data');
-
 % Data
 wl = 7.76;      % Luifelbreedte
-wg = 0.5;       % 
-wo = 1.5;
-hl = 3.9;
-ho = 3.5;
+wg = 0.5;       % Verschil halfbreedtes luifel/perron
+wo = 1.5;       % Afstand tussen perron rand en midden van rails
+hl = 3.9;       % Hoogte bovenkant luifel (vanaf perrron)
+ho = 3.5;       % Hoogte onderkant kabels
 
 sigb = 218e6;   % maximaal toelaatbare buigspanning voor staal S235JR
 tau = 126e6;    % maximaal toelaatbare schuifspanning voor staal S235JR  
@@ -21,18 +19,18 @@ mC = 50;        % massa motor in C
 mL1 = 9.08;     % massa link 1 (per lengte-eenheid)
 mL2 = 9.08;     % massa link 2 (per lengte-eenheid)
 mL3 = 9.08;     % massa link 3 (per lengte-eenheid)
-h1 = 200e-3;    % hoogte profiel link 1
-h2 = 200e-3;
-h3 = 100e-3;
-b1 = 100e-3;    % breedte profiel link 1
-b2 = 100e-3;
-b3 = 50e-3;
+h1 = 400e-3;    % hoogte profiel link 1
+h2 = 400e-3;
+h3 = 200e-3;
+b1 = 200e-3;    % breedte profiel link 1
+b2 = 200e-3;
+b3 = 100e-3;
 t1 = 2*6.3e-3;  % totale dikte profiel link 1
 t2 = 2*6.3e-3;
 t3 = 2*6.3e-3;
 
 
-% Geometry
+% Geometrie bepalen:
 
 % Verste punt dat de arm zeker moet kunnen halen:
 Cdesign = [0;wg+wo;hl+0.7]; 
@@ -51,26 +49,110 @@ fprintf('\t L3 = %f [m] \n',L3);
 
 % Get data of trajectory:
 load('xzycoor.mat');
-Cgoals = xzycoor(1:1400,:)';
-Cgoals(3,:) = Cgoals(3,:)-L3;
-Cgoals([2 3],:) = Cgoals([3 2],:);
+start                   = [-2 0 0];
+Cgoals_main             = xzycoor(1:1400,:)';
+Cgoals_main([2 3],:)    = Cgoals_main([3 2],:); % Adapt for ordering
+Cgoals_deploy           = trajDeploy([[-0.1 L3 1]+start;Cgoals_main(:,1)'+start]',100);
+Cgoals_translate        = [linspace(Cgoals_deploy(1,end);C_main(1,1),100);ones(Cgoals_deploy(2,end),100),...
+                                ones(Cgoals_deploy(3,end),100)];
+Cgoals                  = [Cgoals_deploy(:,1:end-1) Cgoals_main];
 
-N = size(Cgoals,2);
-N = 1400;
-X = zeros(N,3);
-Arm = zeros(3,4,N);
-T      = (N/size(Cgoals,2))*10;
-vx     = (Cgoals(1,N)-Cgoals(1,1))/T; % m/s
-Cstart = [0;1;2];
-Cend   = [2*vx*T;1;2];
-tol    = 1e-5;
+n_deploy                = size(Cgoals_deploy,2)-1;
+n_translate             = size(Cgoals_translate,2)-1;
+n_main                  = size(Cgoals_main,2);
+
+Cgoals(2,:)             = Cgoals(2,:)-L3;       % Adapt for length of third link
+
+N       = size(Cgoals,2);
+X       = zeros(N,3);
+Arm     = zeros(3,4,N);
+T       = (N/size(Cgoals,2))*10;
+vx      = (Cgoals(1,N)-Cgoals(1,1))/T; % m/s
+Cstart  = [0;1;2];
+Cend    = [2*vx*T;1;2];
+tol     = 1e-5;
 
 % make goals:
 
-for k = 1:N
+% deploy
+for k = 1:n_deploy
 fprintf('Iteration %i \n',k);
 Cgoal = Cgoals(:,k);
-A = [vx*(k-1)*T/(N-1);0;0];
+A = start';
+
+l = sqrt((Cgoal(2)-A(2))^2 + (Cgoal(1)-A(1))^2);
+if l < tol
+    psi = pi/2;
+else
+    psi = acos((Cgoal(2)-A(2))/l);
+    % sign correction due to cosine two solutions:
+    if Cgoal(1)<A(1)
+        psi = -psi;
+    end
+end
+
+if k==1
+    x0 = [0,0];
+else
+    x0 = 0.9*X(k-1,1:2);
+end
+options = optimset('Display','off');
+[x,~,exitflag] = fsolve(@(x) armGeom(x,A,Cgoal,psi,L1,L2),x0,options);
+if (exitflag ~= 1)
+    error('The fsolve exit flag was not 1, probably no convergence!');
+end
+
+X(k,:) = [x psi];
+
+B = A + [(L1*sin(x(1)))*sin(psi);(L1*sin(x(1)))*cos(psi);L1*cos(x(1))];
+C = B + [(L2*sin(x(2)))*sin(psi);(L2*sin(x(2)))*cos(psi);L2*cos(x(2))];
+D = C + [0;L3;0];
+Arm(:,:,k) = [A B C D];
+
+end
+
+% translate
+for k = n_deploy+1:(n_deploy+n_translate)
+fprintf('Iteration %i \n',k);
+Cgoal = Cgoals(:,k);
+A = start' + [vx*(k-1-n_deploy)*T/(N-1);0;0];
+
+l = sqrt((Cgoal(2)-A(2))^2 + (Cgoal(1)-A(1))^2);
+if l < tol
+    psi = pi/2;
+else
+    psi = acos((Cgoal(2)-A(2))/l);
+    % sign correction due to cosine two solutions:
+    if Cgoal(1)<A(1)
+        psi = -psi;
+    end
+end
+
+if k==1
+    x0 = [0,0];
+else
+    x0 = 0.9*X(k-1,1:2);
+end
+options = optimset('Display','off');
+[x,~,exitflag] = fsolve(@(x) armGeom(x,A,Cgoal,psi,L1,L2),x0,options);
+if (exitflag ~= 1)
+    error('The fsolve exit flag was not 1, probably no convergence!');
+end
+
+X(k,:) = [x psi];
+
+B = A + [(L1*sin(x(1)))*sin(psi);(L1*sin(x(1)))*cos(psi);L1*cos(x(1))];
+C = B + [(L2*sin(x(2)))*sin(psi);(L2*sin(x(2)))*cos(psi);L2*cos(x(2))];
+D = C + [0;L3;0];
+Arm(:,:,k) = [A B C D];
+
+end
+
+% main cleaning
+for k = (n_deploy+n_translate)+1:(n_deploy+n_translate+n_main)
+fprintf('Iteration %i \n',k);
+Cgoal = Cgoals(:,k);
+A = [vx*(k-1-n_deploy)*T/(N-1);0;0];
 
 l = sqrt((Cgoal(2)-A(2))^2 + (Cgoal(1)-A(1))^2);
 if l < tol
@@ -83,7 +165,7 @@ else
 end
 
 if k==1
-    x0 = [pi/2,0];
+    x0 = [0,pi/2];
 else
     x0 = 0.9*X(k-1,1:2);
 end
