@@ -1,6 +1,21 @@
 # Smartest TrainBrain 2019
 *Authors: Gabor Jespers, Michael Purser* 
 
-This is a small repo containing matlab-code, data and figures for the 'Smartest Train Brain 2019' - competition of the NMBS.
+This is a small repo containing matlab-code, data and figures for the 'Smartest Train Brain 2019' - challenge of the NMBS (info about the challenge and requitrements can be found [here](http://www.thesmartesttrainbrain.be/nl)).
+
+## Proposed concept
+The concept is based on high-pressure water cleaning, performed by a robotic arm mounted on a wagon-base. The concept is worked out only to conceptual leven, elaborating some of the mechanics and hydraulics involved, and defining the control sequence.  
+Matlab-code is provided for the design calculations and visualisations. The visualisations take the form of figures and movies depicting a (simplified version of the) wagon-mounted robotic arm cleaning a virtual environment resembling the platforms and awnings in Leuven station. Some extra geometry has been added on the awnings to show how the arm deals with obstacles.
 
 ## Some figures
+
+Robot mounted on wagon base (here represented as a long, wide, thin box) with joint, link and angle names:  
+![robot arm with names](https://github.com/Michael-Purser/Train-Brain-2019/blob/master/figs/arm_1.png "robot arm with names")
+
+Robot arm and coordinate frames:  
+![coordinate frames](https://github.com/Michael-Purser/Train-Brain-2019/blob/master/figs/arm_assenstelsels.png "coordinate frames")
+
+Robot arm in virtual environment (blue lines: overhead cables):  
+![robot in environment](https://github.com/Michael-Purser/Train-Brain-2019/blob/master/figs/lastframe2.png "robot in environment")
+
+
