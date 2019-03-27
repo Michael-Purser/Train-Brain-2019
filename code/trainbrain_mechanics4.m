@@ -142,7 +142,7 @@ A_cleaning      = [linspace(ref_cleaning(1,1),ref_cleaning(1,n_cleaning),n_clean
                     zeros(1,n_cleaning);zeros(1,n_cleaning)];
 
 P_deploy        = [[0.05;0;0.5]+start ref_cleaning(:,1)+start];
-ref_deploy      = trajInterpolate(P_deploy,100);
+ref_deploy      = trajInterpolate(P_deploy,300);
 n_deploy        = size(ref_deploy,2);
 A_deploy        = start;
 
@@ -155,7 +155,7 @@ A_move          = [linspace(ref_move(1,1),ref_move(1,n_move),n_move);...
                     zeros(1,n_move);zeros(1,n_move)];
 
 P_reploy        = [[ending(1);ref_cleaning(2:3,end)] [0.1;0;0.5]+ending ];
-ref_reploy      = trajInterpolate(P_reploy,100);
+ref_reploy      = trajInterpolate(P_reploy,300);
 n_reploy        = size(ref_reploy,2);
 A_reploy        = ending;
 
@@ -182,30 +182,39 @@ tol             = 1e-5;
 
 X = [Xd;Xm1;Xc;Xm2;Xr];
 Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
-            
-% plot 1 positie:
-k = 3;
-plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
+
+
+
+%% PLOT 1 POSITIE:
+% k = 3;
+% plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
+
+
 
 %% FILMPJE
 % maak filmpje; per x frames --> laat toe grotere resolutie te halen,
 % acteraf filmpje samenstellen met extern programma (e.g. 'Shotcut' op
 % linux).
 
-nbFramesPerMovie    = 200;
+nbFramesPerMovie    = 10;
 ktot                = size(X,1);
 N                   = ceil(ktot/nbFramesPerMovie);
 r                   = rem(ktot,nbFramesPerMovie);
 
-for m=1:N
+for m=1:2
+    
+%     if m>1
+%         clear F;
+%     end
     
     % iteration log
     fprintf('making file %i/%i \n',m,N);
     
     % make movie part save file name
-    filestr = ['part_',num2str(m),'.mat'];
+    filestr  = ['part_',num2str(m)];
     pathname = fileparts('./movieParts/');
-    matfile  = fullfile(pathname, filestr);
+    matfile  = fullfile(pathname, [filestr '.mat']);
+    movfile  = fullfile(pathname, [filestr '.avi']);
 
     % get nb frames in this part
     n = nbFramesPerMovie;
@@ -230,23 +239,25 @@ for m=1:N
         plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
         drawnow;
         pause(0.5);
-        set(gcf,'Position',[1 1 800 800]);
+        set(gcf,'Position',[1000 1 800 800]);
         pause(1);
-        F(k) = getframe(gcf);
-    %     pause(1);
+        F(i) = getframe(gcf);
         close(gcf);
     end
     
+    fprintf('\t saving... \n');
     save(matfile,'F');
+    
+    fprintf('\t making avi... \n');
+    name = movfile;
+    v = VideoWriter(name);
+    v.Quality = 90;
+    v.FrameRate = 30;
+    open(v);
+    writeVideo(v,F);
+    close(v);
+    fprintf('\t finished making avi \n');
 
 end
 
-% name = 'MOVIE_SCHUIN.avi';
-% v = VideoWriter(name);
-% v.Quality = 90;
-% v.FrameRate = 40;
-% open(v);
-% writeVideo(v,F);
-% close(v);
-
-
+fprintf('done \n');
