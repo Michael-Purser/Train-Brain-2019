@@ -6,7 +6,9 @@ X               = zeros(stageN,3);   % initialiseer X
 for k = 1:stageN
 
     % iteratie log:
-    fprintf('Iteration %i of %s \n',k,stageName);
+    if mod(k,10)==0
+        fprintf('Iteration %i/%i of %s \n',k,stageN,stageName);
+    end
 
     % positie van punt C:
     ref = stageRef(:,k);
@@ -60,7 +62,7 @@ for k = 1:stageN
     end
     
     % oplossen naar hoeken:
-    options = optimset('Display','off');
+    options = optimset('Display','off','Algorithm','levenberg-marquardt');
     [x,~,exitflag] = fsolve(@(x) armGeom(x,A,ref,psi,L1,L2),x0,options);
     if (exitflag ~= 1)
         error('The fsolve exit flag was not 1, probably no convergence!');
