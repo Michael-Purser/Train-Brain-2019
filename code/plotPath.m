@@ -26,9 +26,9 @@ plot3([arm(1,4) arm(1,4)],[arm(2,4) ymin],[zmin zmin],'r--');
 
 plot3([xmin xmax],[0 0],[-0.5 -0.5],'k');
 
-w1 = h1/2;
+w1 = b1/2;
 l1 = L1/2;
-d1 = b1/2;
+d1 = h1/2;
 verts = [-w1 -l1 -d1; ...
           w1 -l1 -d1; ...
          -w1  l1 -d1; ...
@@ -48,9 +48,9 @@ patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF1);
 TF1.Matrix = makehgtform('translate',[0.5*(arm(1,1)+arm(1,2))...
     0.5*(arm(2,1)+arm(2,2)) 0.5*(arm(3,1)+arm(3,2))],'zrotate',-X(k,3),'xrotate',pi/2-X(k,1));
 
-w2 = h2/2;
+w2 = b2/2;
 l2 = L2/2;
-d2 = b2/2;
+d2 = h2/2;
 verts = [-w2 -l2 -d2; ...
           w2 -l2 -d2; ...
          -w2  l2 -d2; ...
@@ -70,9 +70,9 @@ patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF2);
 TF2.Matrix = makehgtform('translate',[0.5*(arm(1,2)+arm(1,3))...
     0.5*(arm(2,2)+arm(2,3)) 0.5*(arm(3,2)+arm(3,3))],'zrotate',-X(k,3),'xrotate',pi/2-X(k,2));
 
-w3 = h3/2;
+w3 = b3/2;
 l3 = L3/2;
-d3 = b3/2;
+d3 = h3/2;
 verts = [-w3 -l3 -d3; ...
           w3 -l3 -d3; ...
          -w3  l3 -d3; ...
@@ -89,7 +89,9 @@ faces = [3 4 8 7; ...
          1 2 4 3];
 TF3 = hgtransform;     
 patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF3);
-TF3.Matrix = makehgtform('translate',[arm(1,3) arm(2,3)+l3 arm(3,3)]);
+TF3.Matrix = makehgtform('translate',[0.5*(arm(1,3)+arm(1,4))...
+    0.5*(arm(2,3)+arm(2,4)) 0.5*(arm(3,3)+arm(3,4))],...
+    'zrotate',-pi/2+atan2(arm(2,4)-arm(2,3),arm(1,4)-arm(1,3)));
 
 
 % WAGON EN DRAAIENDE SCHIJF WAAROP ARM ZIT:

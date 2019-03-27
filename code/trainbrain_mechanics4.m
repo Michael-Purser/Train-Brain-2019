@@ -139,7 +139,7 @@ vx_cleaning     = (ref_cleaning(1,n_cleaning)-ref_cleaning(1,1))/T_cleaning;
 A_cleaning      = [linspace(ref_cleaning(1,1),ref_cleaning(1,n_cleaning),n_cleaning);...
                     zeros(1,n_cleaning);zeros(1,n_cleaning)];
 
-P_deploy        = [[0.1;0;0.5]+start ref_cleaning(:,1)+start];
+P_deploy        = [[0.05;0;0.5]+start ref_cleaning(:,1)+start];
 ref_deploy      = trajInterpolate(P_deploy,100);
 n_deploy        = size(ref_deploy,2);
 A_deploy        = start;
@@ -180,10 +180,9 @@ tol             = 1e-5;
 
 X = [Xd;Xm1;Xc;Xm2;Xr];
 Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
-
             
 % plot 1 positie:
-k = 1800;
+k = 3;
 plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
 
 
