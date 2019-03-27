@@ -2,6 +2,8 @@ clear;
 close all;
 clc;
 
+addpath('./movieParts');
+
 % Data
 wl = 7.76;      % luifelbreedte
 wg = 0.5;       % verschil halfbreedtes luifel/perron
@@ -185,23 +187,60 @@ Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
 k = 3;
 plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
 
-
-% maak filmpje; per 200 frames --> laat toe grotere resolutie ste halen
+%% FILMPJE
+% maak filmpje; per x frames --> laat toe grotere resolutie te halen,
 % acteraf filmpje samenstellen met extern programma (e.g. 'Shotcut' op
 % linux).
 
-% for k=1:N
-%     fprintf('Making frame %i \n',k);
-%     plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
-%     drawnow;
-%     pause(0.5);
-%     set(gcf,'Position',[1 1 500 500]);
-% %     pause(1);
-%     F(k) = getframe(gcf);
-% %     pause(1);
-%     close(gcf);
-% end
-% 
+nbFramesPerMovie    = 200;
+ktot                = size(X,1);
+N                   = ceil(ktot/nbFramesPerMovie);
+r                   = rem(ktot,nbFramesPerMovie);
+
+for m=1:N
+    
+    % iteration log
+    fprintf('making file %i/%i \n',m,N);
+    
+    % make movie part save file name
+    filestr = ['part_',num2str(m),'.mat'];
+    pathname = fileparts('./movieParts/');
+    matfile  = fullfile(pathname, filestr);
+
+    % get nb frames in this part
+    n = nbFramesPerMovie;
+    if m==N && r>0
+        n = r;
+    end
+    
+    % initialise counter for percentage completion logger in next loop
+    prev_perc = 0;
+    
+    for i=1:n
+        
+        k = (m-1)*n + i;
+        
+        % completion logger
+        perc = floor(100*i/n);
+        if rem(perc,10)==0 && perc>prev_perc
+            fprintf('\t %i%% \t complete, \t total \t %i/%i \n',perc,k,ktot);
+            prev_perc = perc;
+        end
+        
+        plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
+        drawnow;
+        pause(0.5);
+        set(gcf,'Position',[1 1 800 800]);
+        pause(1);
+        F(k) = getframe(gcf);
+    %     pause(1);
+        close(gcf);
+    end
+    
+    save(matfile,'F');
+
+end
+
 % name = 'MOVIE_SCHUIN.avi';
 % v = VideoWriter(name);
 % v.Quality = 90;
