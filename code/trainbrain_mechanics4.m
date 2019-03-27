@@ -32,6 +32,7 @@ t3 = 2*6.3e-3;
 % Andere parameters:
 Cdesign = [0;wg+wo;hl+0.7];     % verste punt dat de arm zeker moet kunnen halen
 start   = [-2;0;0];             % startpositie deployment
+ending  = [16;0;0];             % eindpositie reployment
 
 
 
@@ -151,30 +152,42 @@ vx_move         = (ref_move(1,n_move)-ref_move(1,1))/T_move;
 A_move          = [linspace(ref_move(1,1),ref_move(1,n_move),n_move);...
                     zeros(1,n_move);zeros(1,n_move)];
 
-ref_total       = [ref_deploy ref_move ref_cleaning];
+P_reploy        = [[ending(1);ref_cleaning(2:3,end)] [0.1;0;0.5]+ending ];
+ref_reploy      = trajInterpolate(P_reploy,100);
+n_reploy        = size(ref_reploy,2);
+A_reploy        = ending;
+
+P_move2         = [ref_cleaning(:,end) ref_reploy(:,1)];
+ref_move2       = trajInterpolate(P_move2,100);
+n_move2         = size(ref_move2,2);
+T_move2         = 2;
+vx_move2        = (ref_move2(1,n_move)-ref_move2(1,1))/T_move2;
+A_move2         = [linspace(ref_move2(1,1),ref_move2(1,n_move2),n_move2);...
+                    zeros(1,n_move2);zeros(1,n_move2)];
+
+ref_total       = [ref_deploy ref_move ref_cleaning ref_move2 ref_reploy];
 n_total         = size(ref_total,2);
 
 tol             = 1e-5;
 
-Arm             = zeros(3,4,n_total); % initialiseer Arm
-X               = zeros(n_total,3);   % initialiseer X
-
-
 % vind posities voor verschillende stappen
 
-[X,Arm] = trajSolve(ref_total,'initial deployment','deploy',1,n_deploy,A_deploy,tol,L1,L2,L3,X,Arm);
-[X,Arm] = trajSolve(ref_total,'move 1','move',n_deploy+1,n_deploy+n_move,...
-                A_move,tol,L1,L2,L3,X,Arm);
-[X,Arm] = trajSolve(ref_total,'cleaning 1','cleaning',n_deploy+n_move+1,...
-                n_deploy+n_move+n_cleaning,A_cleaning,tol,L1,L2,L3,X,Arm);
+[Xd,Armd] = trajSolve(ref_deploy,'initial deployment','deploy',n_deploy,A_deploy,tol,L1,L2,L3);
+[Xm1,Armm1] = trajSolve(ref_move,'move 1','move',n_move,A_move,tol,L1,L2,L3);
+[Xc,Armc] = trajSolve(ref_cleaning,'cleaning 1','cleaning',n_cleaning,A_cleaning,tol,L1,L2,L3);
+[Xm2,Armm2] = trajSolve(ref_move2,'move 2','move',n_move2,A_move2,tol,L1,L2,L3);
+[Xr,Armr] = trajSolve(ref_reploy,'reploy','deploy',n_reploy,A_reploy,tol,L1,L2,L3);
+
+X = [Xd;Xm1;Xc;Xm2;Xr];
+Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
 
             
 % plot 1 positie:
-k = 700;
+k = 1800;
 plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
 
 
-% maak filmpje; per 100 frames --> laat toe grotere resolutie ste halen
+% maak filmpje; per 200 frames --> laat toe grotere resolutie ste halen
 % acteraf filmpje samenstellen met extern programma (e.g. 'Shotcut' op
 % linux).
 

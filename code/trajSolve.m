@@ -1,12 +1,15 @@
-function [X,Arm] = trajSolve(ref_total,stageName,stageType,n_start,n_end,stageBasePos,tol,L1,L2,L3,X,Arm)
+function [X,Arm] = trajSolve(stageRef,stageName,stageType,stageN,stageBasePos,tol,L1,L2,L3)
 
-for k = n_start:n_end
+Arm             = zeros(3,4,stageN); % initialiseer Arm
+X               = zeros(stageN,3);   % initialiseer X
+
+for k = 1:stageN
 
     % iteratie log:
-    fprintf('Iteration %i (%s)\n',k,stageName);
+    fprintf('Iteration %i of %s \n',k,stageName);
 
     % positie van punt C:
-    ref = ref_total(:,k);
+    ref = stageRef(:,k);
 
     % positie van punt A:
     % in deploy/reploy stap blijft wagon stil --> A beweegt niet
@@ -14,9 +17,9 @@ for k = n_start:n_end
     if strcmp(stageType,'deploy')==1
         A   = stageBasePos;
     elseif strcmp(stageType,'move')==1
-        A   = stageBasePos(:,k-n_start+1);
+        A   = stageBasePos(:,k);
     elseif strcmp(stageType,'cleaning')==1
-        A   = stageBasePos(:,k-n_start+1);
+        A   = stageBasePos(:,k);
     else
         error('unrecognized stage type');
     end
@@ -42,7 +45,7 @@ for k = n_start:n_end
     end
     
     % begingok hoeken; hangt af van type beweging en van iteratienummer:
-    if k==n_start
+    if k==1
         if strcmp(stageType,'deploy')==1
             x0 = [0,0];
         elseif strcmp(stageType,'move')==1
@@ -68,7 +71,19 @@ for k = n_start:n_end
 
     B = A + [(L1*sin(x(1)))*sin(psi);(L1*sin(x(1)))*cos(psi);L1*cos(x(1))];
     C = B + [(L2*sin(x(2)))*sin(psi);(L2*sin(x(2)))*cos(psi);L2*cos(x(2))];
-    D = C + [0;L3;0];
+    % positie van punt D hangt af van stage: gedurende deploy/reploy volgt
+    % het de hoek psi, anders niet:
+    if strcmp(stageType,'deploy')==1
+        D = C + [L3*sin(psi);L3*cos(psi);0];
+    elseif strcmp(stageType,'move')==1
+        D = C + [0;L3;0];
+    elseif strcmp(stageType,'cleaning')==1
+        D = C + [0;L3;0];
+    else
+        error('unrecognized stage type');
+    end
+    
+    
     Arm(:,:,k) = [A B C D];
 end
 
