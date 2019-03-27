@@ -186,7 +186,7 @@ Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
 
 
 %% PLOT 1 POSITIE:
-% k = 3;
+% k = 2100;
 % plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
 
 
@@ -196,12 +196,12 @@ Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
 % acteraf filmpje samenstellen met extern programma (e.g. 'Shotcut' op
 % linux).
 
-nbFramesPerMovie    = 10;
+nbFramesPerMovie    = 200;
 ktot                = size(X,1);
 N                   = ceil(ktot/nbFramesPerMovie);
 r                   = rem(ktot,nbFramesPerMovie);
 
-for m=1:2
+for m=1:N
     
 %     if m>1
 %         clear F;
@@ -240,7 +240,6 @@ for m=1:2
         drawnow;
         pause(0.5);
         set(gcf,'Position',[1000 1 800 800]);
-        pause(1);
         F(i) = getframe(gcf);
         close(gcf);
     end

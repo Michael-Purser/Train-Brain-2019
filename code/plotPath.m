@@ -1,7 +1,7 @@
 function plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl)
 
-xmin = min(min(Arm(1,:,:)));
-xmax = max(max(Arm(1,:,:)));
+xmin = min(min(Arm(1,:,:)))-2;
+xmax = max(max(Arm(1,:,:)))+2;
 ymin = min(min(Arm(2,:,:)));
 ymax = max(max(Arm(2,:,:)));
 zmin = min(min(Arm(3,:,:)));
@@ -174,7 +174,7 @@ plot3(x,zeros(size(x)),fb(x),'b','Linewidth',2);
 plot3(x,zeros(size(x)),fb(x)+0.4,'b','Linewidth',2);
 
 axis equal;
-axis([-4 18 -1.5 10 -1 7]);
+axis([-6 20 -3 10 -1 7]);
 
 view(-40,20);
 % view(-90,0);
