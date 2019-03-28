@@ -13,6 +13,10 @@ zmax = max(max(Arm(3,:,:)));
 arm = Arm(:,:,k);
 colorOrange = [255 140 0]/255;
 colorBlue = [0 121 194]/255;
+colorBrownLight = [102 51 0]/255;
+colorBrownDark = [75 40 0]/255;
+colorGreyLight = [.75 .75 .75];
+colorGreyDark = [.5 .5 .5];
 color = colorOrange;
 arm = Arm(:,:,k);
 plot3(arm(1,1:end-1),arm(2,1:end-1),arm(3,1:end-1),'ko','Linewidth',2); hold all;
@@ -126,7 +130,7 @@ verts = [-Lw/2 -Ww/2  Zw; ...
       
 faces = [1 2 4 3];
 TFw = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[.75 .75 .75],'Parent',TFw);
+patch('Vertices',verts,'Faces',faces,'FaceColor',colorGreyLight,'Parent',TFw);
 TFw.Matrix = makehgtform('translate',[arm(1,1) 0 0]);
       
 faces = [3 4 8 7; ...
@@ -135,7 +139,7 @@ faces = [3 4 8 7; ...
          1 3 7 5; ...
          7 8 6 5];
 TFw = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[.5 .5 .5],'Parent',TFw);
+patch('Vertices',verts,'Faces',faces,'FaceColor',colorGreyDark,'Parent',TFw);
 TFw.Matrix = makehgtform('translate',[arm(1,1) 0 0]);
 
 arc = linspace(0,2*pi,100);
@@ -190,6 +194,7 @@ plot3(x,zeros(size(x)),fb(x)+0.4,'b','Linewidth',2);
 
 axis equal;
 axis([-6 20 -3 10 -1 7]);
+% axis([-1 14 -3 10 -1 7]);
 
 if viewCase==1
     view(-42,25);

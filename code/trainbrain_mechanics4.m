@@ -186,9 +186,9 @@ Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
 
 
 %% PLOT 1 POSITIE:
-k = 1200;
+k = 800;
 plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl,1,1); hold on;
-text(5,7,10,'kihghghdf','Fontsize',14);
+% text(5,7,10,'kihghghdf','Fontsize',14);
 
 
 %% FILMPJE
