@@ -11,6 +11,8 @@ figure;
 
 % ARM:
 arm = Arm(:,:,k);
+color = [255 140 0]/255;
+% color = [0 121 194]/255;
 plot3(arm(1,1:end-1),arm(2,1:end-1),arm(3,1:end-1),'ko','Linewidth',2); hold all;
 % plot3(squeeze(Arm(1,end,1:k)),squeeze(Arm(2,end,1:k)),squeeze(Arm(3,end,1:k)),'r','Linewidth',2);
 set(gca, 'visible', 'off');
@@ -26,9 +28,9 @@ set(gca, 'visible', 'off');
 
 % plot3([xmin xmax],[0 0],[-0.5 -0.5],'k');
 
-w1 = h1/2;
+w1 = b1/2;
 l1 = L1/2;
-d1 = b1/2;
+d1 = h1/2;
 verts = [-w1 -l1 -d1; ...
           w1 -l1 -d1; ...
          -w1  l1 -d1; ...
@@ -44,13 +46,13 @@ faces = [3 4 8 7; ...
          7 8 6 5; ...
          1 2 4 3];
 TF1 = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF1);
+patch('Vertices',verts,'Faces',faces,'FaceColor',color,'Parent',TF1);
 TF1.Matrix = makehgtform('translate',[0.5*(arm(1,1)+arm(1,2))...
     0.5*(arm(2,1)+arm(2,2)) 0.5*(arm(3,1)+arm(3,2))],'zrotate',-X(k,3),'xrotate',pi/2-X(k,1));
 
-w2 = h2/2;
+w2 = b2/2;
 l2 = L2/2;
-d2 = b2/2;
+d2 = h2/2;
 verts = [-w2 -l2 -d2; ...
           w2 -l2 -d2; ...
          -w2  l2 -d2; ...
@@ -66,13 +68,13 @@ faces = [3 4 8 7; ...
          7 8 6 5; ...
          1 2 4 3];
 TF2 = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF2);
+patch('Vertices',verts,'Faces',faces,'FaceColor',color,'Parent',TF2);
 TF2.Matrix = makehgtform('translate',[0.5*(arm(1,2)+arm(1,3))...
     0.5*(arm(2,2)+arm(2,3)) 0.5*(arm(3,2)+arm(3,3))],'zrotate',-X(k,3),'xrotate',pi/2-X(k,2));
 
-w3 = h3/2;
+w3 = b3/2;
 l3 = L3/2;
-d3 = b3/2;
+d3 = h3/2;
 verts = [-w3 -l3 -d3; ...
           w3 -l3 -d3; ...
          -w3  l3 -d3; ...
@@ -88,7 +90,7 @@ faces = [3 4 8 7; ...
          7 8 6 5; ...
          1 2 4 3];
 TF3 = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF3);
+patch('Vertices',verts,'Faces',faces,'FaceColor',color,'Parent',TF3);
 TF3.Matrix = makehgtform('translate',[arm(1,3) arm(2,3)+l3 arm(3,3)]);
 
 
@@ -96,7 +98,7 @@ TF3.Matrix = makehgtform('translate',[arm(1,3) arm(2,3)+l3 arm(3,3)]);
 
 Lw = 6; % length wagon
 Ww = 3; % width wagon
-Hw = 0.5; % height platform representing wagon
+Hw = 0.2; % height platform representing wagon
 Zw = -0.3; % vertical offset between wagon and platform
 verts = [-Lw/2 -Ww/2  Zw; ...
           Lw/2 -Ww/2  Zw; ...
@@ -123,11 +125,11 @@ TFw.Matrix = makehgtform('translate',[arm(1,1) 0 0]);
 
 arc = linspace(0,2*pi,100);
 R = 1;
-fill3(R*cos(arc)+arm(1,1),R*sin(arc),zeros(size(arc)),[255 140 0]/255);
+fill3(R*cos(arc)+arm(1,1),R*sin(arc),zeros(size(arc)),color);
 plot3(R*cos(arc)+arm(1,1),R*sin(arc),Zw*ones(size(arc)),'k');
 [Xc,Yc,Zc] = cylinder(1,50);
 s1 = surf(Xc+arm(1,1),Yc,0.7*(Zc-1)); 
-s1.FaceColor = [255 140 0]/255;
+s1.FaceColor = color;
 
 plot3([-R*cos(X(k,3)) R*cos(X(k,3))]+arm(1,1), [R*sin(X(k,3)) -R*sin(X(k,3))],[0 0],'k','Linewidth',1.5);
 

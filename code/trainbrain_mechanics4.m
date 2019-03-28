@@ -186,9 +186,9 @@ Arm = cat(3,Armd,Armm1,Armc,Armm2,Armr);
 
 
 %% PLOT 1 POSITIE:
-% k = 2100;
-% plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
-
+k = 1200;
+plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl,1,1); hold on;
+text(5,7,10,'kihghghdf','Fontsize',14);
 
 
 %% FILMPJE
@@ -201,11 +201,7 @@ ktot                = size(X,1);
 N                   = ceil(ktot/nbFramesPerMovie);
 r                   = rem(ktot,nbFramesPerMovie);
 
-for m=1:N
-    
-%     if m>1
-%         clear F;
-%     end
+for m=3:N
     
     % iteration log
     fprintf('making file %i/%i \n',m,N);
@@ -222,6 +218,18 @@ for m=1:N
         n = r;
     end
     
+    % title and waterjet depending on situation:
+    if m==1 || m==2
+        titlestr = 'Deployment';
+        straal = 0;
+    elseif m>2 && m<10
+        titlestr = 'Cleaning';
+        straal = 1;
+    else
+        titlestr = 'Reset';
+        straal = 0;
+    end
+    
     % initialise counter for percentage completion logger in next loop
     prev_perc = 0;
     
@@ -236,7 +244,10 @@ for m=1:N
             prev_perc = perc;
         end
         
-        plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl);
+        plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl,straal,1); 
+        hold on;
+        text(5,7,10,titlestr,'Fontsize',14);
+        
         drawnow;
         pause(0.5);
         set(gcf,'Position',[1000 1 800 800]);

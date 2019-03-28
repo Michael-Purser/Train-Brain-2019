@@ -1,4 +1,4 @@
-function plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl)
+function plotPath(k,Arm,X,h1,b1,L1,h2,b2,L2,h3,b3,L3,wg,wo,wl,straal,viewCase)
 
 xmin = min(min(Arm(1,:,:)))-2;
 xmax = max(max(Arm(1,:,:)))+2;
@@ -7,22 +7,26 @@ ymax = max(max(Arm(2,:,:)));
 zmin = min(min(Arm(3,:,:)));
 zmax = max(max(Arm(3,:,:)));
 
-figure;
+% figure;
 
 % ARM:
+arm = Arm(:,:,k);
+colorOrange = [255 140 0]/255;
+colorBlue = [0 121 194]/255;
+color = colorOrange;
 arm = Arm(:,:,k);
 plot3(arm(1,1:end-1),arm(2,1:end-1),arm(3,1:end-1),'ko','Linewidth',2); hold all;
 plot3(squeeze(Arm(1,end,1:k)),squeeze(Arm(2,end,1:k)),squeeze(Arm(3,end,1:k)),'r','Linewidth',2);
 set(gca, 'visible', 'off');
 
-plot3(xmin,arm(2,4),zmin,'ro','Linewidth',2);
-plot3(arm(1,4),ymin,zmin,'ro','Linewidth',2);
-plot3(arm(1,4),arm(2,4),zmin,'ro','Linewidth',2);
-plot3(arm(1,4),ymax,arm(3,4),'ro','Linewidth',2);
-plot3([arm(1,4) arm(1,4)],[arm(2,4) arm(2,4)],[arm(3,4) zmin],'r--');
-plot3([arm(1,4) arm(1,4)],[arm(2,4) ymax],[arm(3,4) arm(3,4)],'r--');
-plot3([xmin arm(1,4)],[arm(2,4) arm(2,4)],[zmin zmin],'r--');
-plot3([arm(1,4) arm(1,4)],[arm(2,4) ymin],[zmin zmin],'r--');
+% plot3(xmin,arm(2,4),zmin,'ro','Linewidth',2);
+% plot3(arm(1,4),ymin,zmin,'ro','Linewidth',2);
+% plot3(arm(1,4),arm(2,4),zmin,'ro','Linewidth',2);
+% plot3(arm(1,4),ymax,arm(3,4),'ro','Linewidth',2);
+% plot3([arm(1,4) arm(1,4)],[arm(2,4) arm(2,4)],[arm(3,4) zmin],'r--');
+% plot3([arm(1,4) arm(1,4)],[arm(2,4) ymax],[arm(3,4) arm(3,4)],'r--');
+% plot3([xmin arm(1,4)],[arm(2,4) arm(2,4)],[zmin zmin],'r--');
+% plot3([arm(1,4) arm(1,4)],[arm(2,4) ymin],[zmin zmin],'r--');
 
 plot3([xmin xmax],[0 0],[-0.5 -0.5],'k');
 
@@ -44,7 +48,7 @@ faces = [3 4 8 7; ...
          7 8 6 5; ...
          1 2 4 3];
 TF1 = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF1);
+patch('Vertices',verts,'Faces',faces,'FaceColor',color,'Parent',TF1);
 TF1.Matrix = makehgtform('translate',[0.5*(arm(1,1)+arm(1,2))...
     0.5*(arm(2,1)+arm(2,2)) 0.5*(arm(3,1)+arm(3,2))],'zrotate',-X(k,3),'xrotate',pi/2-X(k,1));
 
@@ -66,7 +70,7 @@ faces = [3 4 8 7; ...
          7 8 6 5; ...
          1 2 4 3];
 TF2 = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF2);
+patch('Vertices',verts,'Faces',faces,'FaceColor',color,'Parent',TF2);
 TF2.Matrix = makehgtform('translate',[0.5*(arm(1,2)+arm(1,3))...
     0.5*(arm(2,2)+arm(2,3)) 0.5*(arm(3,2)+arm(3,3))],'zrotate',-X(k,3),'xrotate',pi/2-X(k,2));
 
@@ -88,11 +92,22 @@ faces = [3 4 8 7; ...
          7 8 6 5; ...
          1 2 4 3];
 TF3 = hgtransform;     
-patch('Vertices',verts,'Faces',faces,'FaceColor',[255 140 0]/255,'Parent',TF3);
+patch('Vertices',verts,'Faces',faces,'FaceColor',color,'Parent',TF3);
 TF3.Matrix = makehgtform('translate',[0.5*(arm(1,3)+arm(1,4))...
     0.5*(arm(2,3)+arm(2,4)) 0.5*(arm(3,3)+arm(3,4))],...
     'zrotate',-pi/2+atan2(arm(2,4)-arm(2,3),arm(1,4)-arm(1,3)));
 
+
+% WATERSTRAAL UIT ARM:
+if straal==1
+    Xw = [0;0;0;0];
+    Yw = [0;0;L3;L3];
+    Zw = [0;-0.6;-0.6;0];
+    x_trans = arm(1,3);
+    y_trans = arm(2,3);
+    z_trans = arm(3,3);
+    fill3(Xw+x_trans,Yw+y_trans,Zw+z_trans,colorBlue);
+end
 
 % WAGON EN DRAAIENDE SCHIJF WAAROP ARM ZIT:
 
@@ -125,10 +140,10 @@ TFw.Matrix = makehgtform('translate',[arm(1,1) 0 0]);
 
 arc = linspace(0,2*pi,100);
 R = 1;
-fill3(R*cos(arc)+arm(1,1),R*sin(arc),zeros(size(arc)),[255 140 0]/255);
+fill3(R*cos(arc)+arm(1,1),R*sin(arc),zeros(size(arc)),color);
 [Xc,Yc,Zc] = cylinder(1,50);
 s1 = surf(Xc+arm(1,1),Yc,0.7*(Zc-1)); 
-s1.FaceColor = [255 140 0]/255;
+s1.FaceColor = color;
 
 plot3([-R*cos(X(k,3)) R*cos(X(k,3))]+arm(1,1), [R*sin(X(k,3)) -R*sin(X(k,3))],[0 0],'k','Linewidth',1.5);
 
@@ -167,8 +182,8 @@ s2.FaceColor = [0.5 0.5 0.5];
 
 
 % BOVENLEIDING:
-x = linspace(0,14,300);
-fb = @(x) (0.3/49)*(x-7).^2 + 3.7;
+x = linspace(-6,20,300);
+fb = @(x) (0.2/49)*(x-7).^2 + 3.7;
 
 plot3(x,zeros(size(x)),fb(x),'b','Linewidth',2);
 plot3(x,zeros(size(x)),fb(x)+0.4,'b','Linewidth',2);
@@ -176,7 +191,10 @@ plot3(x,zeros(size(x)),fb(x)+0.4,'b','Linewidth',2);
 axis equal;
 axis([-6 20 -3 10 -1 7]);
 
-view(-40,20);
-% view(-90,0);
+if viewCase==1
+    view(-42,25);
+else
+    view(-90,0);
+end
 
 end
