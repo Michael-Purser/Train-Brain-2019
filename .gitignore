@@ -1,4 +1,4 @@
 #ignore all temporary ~ files
 *~
 /code/movieParts/*
-*.dropbox
+.dropbox
