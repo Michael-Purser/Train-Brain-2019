@@ -17,7 +17,7 @@ Robot mounted on wagon base (here represented as a long, wide, thin box) with jo
 Robot arm and coordinate frames:  
 ![coordinate frames](https://github.com/Michael-Purser/Train-Brain-2019/blob/master/figs/arm_assenstelsels.png "coordinate frames")
 
-Robot arm in virtual environment (blue lines: overhead cables):  
+Robot arm in virtual environment (blue: water for cleaning):  
 ![robot in environment](https://github.com/Michael-Purser/Train-Brain-2019/blob/master/figs/global3D.png "robot in environment")
 
 
