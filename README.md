@@ -1,9 +1,10 @@
 # Smartest TrainBrain 2019
 *Authors: Gabor Jespers, Michael Purser* 
 
-This is a small repo containing matlab-code, data and figures for the 'Smartest Train Brain 2019' - challenge of the NMBS (info about the challenge and requirements can be found [here](http://www.thesmartesttrainbrain.be/nl)).
+This is a small repo containing matlab-code, data and figures for the 'Smartest Train Brain 2019' - challenge of the NMBS (info about the challenge and requirements can be found [here](http://www.thesmartesttrainbrain.be/nl)). The Report and a .pdf version of the presentation are included in this repo. A link to the presentation (with animations & movie) can be found [here](https://drive.google.com/open?id=1TeZWRkU40D5BCWMA9OMS_TEDORgWYMJ5TPP64VglVrM)
 
-*Update: the autors won 2nd place, not a bad result in our opinion :-)*
+*Update: the authors won 2nd place, not a bad result in our opinion :-)*  
+
 
 ## Proposed concept
 The concept is based on high-pressure water cleaning, performed by a robotic arm mounted on a wagon-base. The concept is worked out only to conceptual level, elaborating some of the mechanics and hydraulics involved, and defining the control sequence.  
