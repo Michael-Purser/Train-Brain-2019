@@ -2,3 +2,8 @@
 *~
 /code/movieParts/*
 .dropbox
+/z_old/*.avi
+/z_old/*.mat
+/z_old/*.mp4
+backup_*
+finalPresentation/*
